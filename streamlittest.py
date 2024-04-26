@@ -1,6 +1,6 @@
 import streamlit as st
-import matplotlib.pyplot as plt
 import numpy as np
+import panda as pd
 
 arr = np.random.normal(1, 1, size=100)
 fig, ax = plt.subplots()

@@ -10,10 +10,8 @@ Original file is located at
 import numpy as np
 import requests
 import pandas as pd
-"""
 import matplotlib.pyplot as plt
 disabled for now
-"""
 import seaborn as sns
 from datetime import datetime
 now = datetime.now()

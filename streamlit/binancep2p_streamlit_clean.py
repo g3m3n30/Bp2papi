@@ -1,10 +1,10 @@
+import streamlit as st
+import numpy as np
+import requests
+import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from datetime import datetime
-
-# Function to round numbers to the nearest 25
-def round_25(number):
-    return 25 * round(number / 25)
 
 # Streamlit App Title
 st.title('BinanceP2P USDT-MMK market')
@@ -62,6 +62,10 @@ df = df[(df.price >= price_lower_quantile) & (df.price <= price_upper_quantile)]
 
 buy = df.loc[df.buysell == 'BUY']
 sell = df.loc[df.buysell == 'SELL']
+
+# Function to round numbers to the nearest 25
+def round_25(number):
+    return 25 * round(number / 25)
 
 # Rounding for x-axis ticks
 min_round = round_25(min(df.price))

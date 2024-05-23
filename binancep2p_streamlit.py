@@ -8,6 +8,31 @@ from datetime import datetime
 import sqlite3
 from apscheduler.schedulers.background import BackgroundScheduler
 
+# Flag to track whether database has been initialized
+db_initialized = False
+
+# Function to initialize the database
+def init_db():
+    global db_initialized
+    conn = sqlite3.connect('binance_data.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS p2p_data (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        price REAL,
+        limit REAL,
+        buysell TEXT,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+    ''')
+    conn.commit()
+    conn.close()
+    db_initialized = True
+
+# Initialize the database if not already initialized
+if not db_initialized:
+    init_db()
+
 # Database functions
 def init_db():
     conn = sqlite3.connect('binance_data.db')
@@ -55,9 +80,6 @@ def get_historical_data():
     df = pd.read_sql_query("SELECT * FROM p2p_data", conn)
     conn.close()
     return df
-
-# Initialize the database
-init_db()
 
 # Schedule data fetching
 scheduler = BackgroundScheduler()

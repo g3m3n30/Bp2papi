@@ -18,7 +18,7 @@ def setup_database():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             timestamp TEXT,
             price REAL,
-            limit REAL,
+            trade_limit REAL,
             buysell TEXT
         )
     ''')
@@ -43,9 +43,9 @@ def insert_data(data):
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     for item in data:
         c.execute('''
-            INSERT INTO p2p_data (timestamp, price, limit, buysell)
+            INSERT INTO p2p_data (timestamp, price, trade_limit, buysell)
             VALUES (?, ?, ?, ?)
-        ''', (now, item['price'], item['limit'], item['buysell']))
+        ''', (now, item['price'], item['trade_limit'], item['buysell']))
     conn.commit()
     conn.close()
 
@@ -65,7 +65,7 @@ def fetch_and_store_data():
     x = list(map(lambda x: x["price"], result))
     y = list(map(lambda y: y["tradableQuantity"], result))
     z = list(map(lambda z: z["tradeType"], result))
-    combineddata = [{'price': price, 'limit': limit, 'buysell': buysell} for price, limit, buysell in zip(x, y, z)]
+    combineddata = [{'price': price, 'trade_limit': limit, 'buysell': buysell} for price, limit, buysell in zip(x, y, z)]
     
     insert_data(combineddata)
 

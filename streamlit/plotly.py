@@ -68,7 +68,7 @@ sell = df.loc[df.buysell == 'SELL']
 
 # Find the highest buy price and lowest sell price
 highest_buy = buy.loc[buy.price.idxmax()]
-lowest_sell = sell.loc[sell.price.idxmin()
+lowest_sell = sell.loc[sell.price.idxmin()]
 
 # Rounding for x-axis ticks
 min_round = round_25(min(df.price))

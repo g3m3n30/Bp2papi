@@ -4,4 +4,3 @@ pandas
 matplotlib
 seaborn
 apscheduler
-sqlite3

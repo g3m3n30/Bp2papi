@@ -8,9 +8,10 @@ def setup_database():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             timestamp TEXT,
             price REAL,
-            limit REAL,
+            trade_limit REAL,
             buysell TEXT
         )
     ''')
     conn.commit()
     conn.close()
+

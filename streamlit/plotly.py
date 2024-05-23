@@ -3,6 +3,7 @@ import numpy as np
 import requests
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 from datetime import datetime
 
 # Function to round numbers to the nearest 25
@@ -65,15 +66,42 @@ df = df[(df.price >= price_lower_quantile) & (df.price <= price_upper_quantile)]
 buy = df.loc[df.buysell == 'BUY']
 sell = df.loc[df.buysell == 'SELL']
 
+# Find the highest buy price and lowest sell price
+highest_buy = buy.loc[buy.price.idxmax()]
+lowest_sell = sell.loc[sell.price.idxmin()
+
 # Rounding for x-axis ticks
 min_round = round_25(min(df.price))
 max_round = round_25(max(df.price))
 
 # Plotting with Plotly
+color_discrete_map = {'BUY': 'green', 'SELL': 'red'}
 fig = px.scatter(df, x='price', y='limit', color='buysell', log_y=True,
                  labels={'price': 'Price (MMK)', 'limit': 'Tradable Quantity (Depth)'},
                  title=f"Last update: {current_time}",
+                 color_discrete_map=color_discrete_map,
                  hover_data=['price', 'limit', 'buysell'])
+
+# Add annotations for highest buy and lowest sell
+fig.add_trace(go.Scatter(
+    x=[highest_buy['price']],
+    y=[highest_buy['limit']],
+    mode='text',
+    text=[f"Highest Buy: {highest_buy['price']} MMK"],
+    textposition='top right',
+    showlegend=False,
+    marker=dict(color='green')
+))
+
+fig.add_trace(go.Scatter(
+    x=[lowest_sell['price']],
+    y=[lowest_sell['limit']],
+    mode='text',
+    text=[f"Lowest Sell: {lowest_sell['price']} MMK"],
+    textposition='top right',
+    showlegend=False,
+    marker=dict(color='red')
+))
 
 fig.update_layout(
     xaxis=dict(tickmode='linear', dtick=25, range=[min_round, max_round]),

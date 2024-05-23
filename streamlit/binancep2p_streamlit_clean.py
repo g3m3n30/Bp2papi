@@ -57,15 +57,3 @@ ax.set_yticks([100, 250, 500, 1000, 2000, 5000, 10000, 50000, 100000, 200000, 50
               ["100", "250", "500", "1k", "2k", "5k", "10k", "50k", "100k", "200k", "500k", "1M"])
 
 st.pyplot(fig)
-
-# Historical data visualization
-df_historical = get_historical_data()
-df_historical['timestamp'] = pd.to_datetime(df_historical['timestamp'])
-
-fig2, ax2 = plt.subplots(figsize=(10, 6))
-sns.lineplot(data=df_historical, x='timestamp', y='price', hue='buysell', ax=ax2)
-ax2.set_title('Price Over Time')
-ax2.set_xlabel('Timestamp')
-ax2.set_ylabel('Price')
-
-st.pyplot(fig2)

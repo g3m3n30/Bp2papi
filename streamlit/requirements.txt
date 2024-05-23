@@ -1,0 +1,6 @@
+streamlit
+requests
+pandas
+matplotlib
+seaborn
+APScheduler>=3.10.4

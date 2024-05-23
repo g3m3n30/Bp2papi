@@ -68,7 +68,7 @@ sell = df.loc[df.buysell == 'SELL']
 
 # Find the highest buy price and lowest sell price
 highest_buy = buy.loc[buy.price.idxmax()]
-lowest_sell = sell.loc[sell.price.idxmin()]
+lowest_sell = sell.loc[sell.price.idxmin()
 
 # Rounding for x-axis ticks
 min_round = round_25(min(df.price))
@@ -87,7 +87,7 @@ fig.add_trace(go.Scatter(
     x=[highest_buy['price']],
     y=[highest_buy['limit']],
     mode='text',
-    text=[x],
+    text=[{highest_buy['price']}],
     textposition='top right',
     showlegend=False,
     marker=dict(color='green')
@@ -97,7 +97,7 @@ fig.add_trace(go.Scatter(
     x=[lowest_sell['price']],
     y=[lowest_sell['limit']],
     mode='text',
-    text=[y],
+    text=[{lowest_sell['price']}],
     textposition='top right',
     showlegend=False,
     marker=dict(color='red')

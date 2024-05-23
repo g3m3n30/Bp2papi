@@ -11,7 +11,7 @@ def round_25(number):
     return 25 * round(number / 25)
 
 # Streamlit App Title
-st.title('Binance P2P Data Visualization')
+st.title('BinanceP2P USDT-MMK market')
 
 # Current Time
 now = datetime.now()
@@ -80,7 +80,7 @@ sns.scatterplot(x="price", y="limit", hue="buysell", data=df, ax=ax, s=50, alpha
 # Adjusting the point size (s=50) and transparency (alpha=0.7) helps in better visualizing overlapping points.
 
 
-ax.set_xlabel("Price")
+ax.set_xlabel("Price (mmk)")
 ax.set_ylabel("Tradable Quantity (Depth)")
 ax.set_yscale('log')
 ax.set_xticks(np.arange(min_round, max_round + 1, 25))

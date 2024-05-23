@@ -81,11 +81,17 @@ sns.scatterplot(x="price", y="limit", hue="buysell", data=df, ax=ax, s=50, alpha
 
 
 ax.set_xlabel("Price")
-ax.set_ylabel("Depth ($)")
+ax.set_ylabel("Tradable Quantity (Depth)")
 ax.set_yscale('log')
 ax.set_xticks(np.arange(min_round, max_round + 1, 25))
 ax.set_yticks([100, 250, 500, 1000, 2000, 5000, 10000, 50000, 100000, 200000, 500000, 1000000], 
               [100, 250, 500, "1k", "2k", "5k", "10k", "50k", "100k", "200k", "500k", "1M"])
+
+# Adding annotations for key points
+for i in range(len(df)):
+    if df.iloc[i]['limit'] > 100000:
+        ax.annotate(f"{df.iloc[i]['limit']}", (df.iloc[i]['price'], df.iloc[i]['limit']), textcoords="offset points", xytext=(0,10), ha='center')
+
 
 # Display the plot in Streamlit
 st.pyplot(fig)

@@ -1,5 +1,7 @@
-numpy
+streamlit
 requests
 pandas
 matplotlib
 seaborn
+apscheduler
+sqlite3

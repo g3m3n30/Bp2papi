@@ -5,93 +5,114 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from datetime import datetime
+import sqlite3
+import schedule
+import time
 
-# Streamlit App Title
-st.title('BinanceP2P USDT-MMK market')
-
-# Current Time
-now = datetime.now()
-current_time = now.strftime("%d-%b-%Y %H:%M:%S")
-st.write(f"Last update: {current_time}")
-
-# Binance API link and headers
-link = 'https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search'
-headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36',
-}
+# Function to set up the database
+def setup_database():
+    conn = sqlite3.connect('binance_p2p.db')
+    c = conn.cursor()
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS p2p_data (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            timestamp TEXT,
+            price REAL,
+            limit REAL,
+            buysell TEXT
+        )
+    ''')
+    conn.commit()
+    conn.close()
 
 # Function to fetch data from Binance API
 def fetch_data(payload):
+    link = 'https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search'
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36',
+    }
     with requests.Session() as s:
         s.headers.update(headers)
         res = s.post(link, json=payload)
         return res.json()['data']
 
-# Payloads for different API requests
-payload_buy_1 = {"proMerchantAds": False, "page": 1, "rows": 20, "payTypes": [], "countries": [], "publisherType": None, "asset": "USDT", "fiat": "MMK", "tradeType": "BUY"}
-payload_sell_1 = {"proMerchantAds": False, "page": 1, "rows": 20, "payTypes": [], "countries": [], "publisherType": None, "asset": "USDT", "fiat": "MMK", "tradeType": "SELL"}
-payload_buy_2 = {"proMerchantAds": False, "page": 2, "rows": 20, "payTypes": [], "countries": [], "publisherType": None, "asset": "USDT", "fiat": "MMK", "tradeType": "BUY"}
-payload_sell_2 = {"proMerchantAds": False, "page": 2, "rows": 20, "payTypes": [], "countries": [], "publisherType": None, "asset": "USDT", "fiat": "MMK", "tradeType": "SELL"}
+# Function to insert data into the database
+def insert_data(data):
+    conn = sqlite3.connect('binance_p2p.db')
+    c = conn.cursor()
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    for item in data:
+        c.execute('''
+            INSERT INTO p2p_data (timestamp, price, limit, buysell)
+            VALUES (?, ?, ?, ?)
+        ''', (now, item['price'], item['limit'], item['buysell']))
+    conn.commit()
+    conn.close()
 
-# Fetch and combine data
-data = fetch_data(payload_buy_1)
-data.extend(fetch_data(payload_sell_1))
-data.extend(fetch_data(payload_buy_2))
-data.extend(fetch_data(payload_sell_2))
+# Function to fetch and process data
+def fetch_and_store_data():
+    payload_buy_1 = {"proMerchantAds": False, "page": 1, "rows": 20, "payTypes": [], "countries": [], "publisherType": None, "asset": "USDT", "fiat": "MMK", "tradeType": "BUY"}
+    payload_sell_1 = {"proMerchantAds": False, "page": 1, "rows": 20, "payTypes": [], "countries": [], "publisherType": None, "asset": "USDT", "fiat": "MMK", "tradeType": "SELL"}
+    payload_buy_2 = {"proMerchantAds": False, "page": 2, "rows": 20, "payTypes": [], "countries": [], "publisherType": None, "asset": "USDT", "fiat": "MMK", "tradeType": "BUY"}
+    payload_sell_2 = {"proMerchantAds": False, "page": 2, "rows": 20, "payTypes": [], "countries": [], "publisherType": None, "asset": "USDT", "fiat": "MMK", "tradeType": "SELL"}
 
-# Process data into a DataFrame
-result = [dict(pair for d1 in d.values() for pair in d1.items()) for d in data]
-x = list(map(lambda x: x["price"], result))
-y = list(map(lambda y: y["tradableQuantity"], result))
-z = list(map(lambda z: z["tradeType"], result))
-combineddata = [{'price': price, 'limit': limit, 'buysell': buysell} for price, limit, buysell in zip(x, y, z)]
-df = pd.DataFrame(data=combineddata)
+    data = fetch_data(payload_buy_1)
+    data.extend(fetch_data(payload_sell_1))
+    data.extend(fetch_data(payload_buy_2))
+    data.extend(fetch_data(payload_sell_2))
 
-# Convert columns to appropriate types
-df.price = df.price.astype("float")
-df.limit = df.limit.astype("float")
-df.buysell = df.buysell.astype("str")
-buy = df.loc[df.buysell == 'BUY']
-sell = df.loc[df.buysell == 'SELL']
+    result = [dict(pair for d1 in d.values() for pair in d1.items()) for d in data]
+    x = list(map(lambda x: x["price"], result))
+    y = list(map(lambda y: y["tradableQuantity"], result))
+    z = list(map(lambda z: z["tradeType"], result))
+    combineddata = [{'price': price, 'limit': limit, 'buysell': buysell} for price, limit, buysell in zip(x, y, z)]
+    
+    insert_data(combineddata)
 
-# Filter outliers (optional step, adjust as needed)
-#This step removes the prices that fall outside the 5th and 95th percentiles, which helps in focusing on the central distribution of prices.
-price_lower_quantile = df.price.quantile(0.05)
-price_upper_quantile = df.price.quantile(0.95)
-df = df[(df.price >= price_lower_quantile) & (df.price <= price_upper_quantile)]
+# Schedule the fetch_and_store_data function to run every hour
+schedule.every().hour.do(fetch_and_store_data)
 
-buy = df.loc[df.buysell == 'BUY']
-sell = df.loc[df.buysell == 'SELL']
+# Function to run the scheduler
+def run_scheduler():
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
 
-# Function to round numbers to the nearest 25
-def round_25(number):
-    return 25 * round(number / 25)
+# Main Streamlit app
+st.title('BinanceP2P USDT-MMK market')
 
-# Rounding for x-axis ticks
-min_round = round_25(min(df.price))
-max_round = round_25(max(df.price))
+# Set up the database (this will only create the table if it doesn't exist)
+setup_database()
 
-# Plotting
+# Display the current time
+now = datetime.now()
+current_time = now.strftime("%d-%b-%Y %H:%M:%S")
+st.write(f"Last update: {current_time}")
+
+# Fetch data and update the database
+fetch_and_store_data()
+
+# Querying historical data from the database
+def fetch_historical_data():
+    conn = sqlite3.connect('binance_p2p.db')
+    df = pd.read_sql_query("SELECT * FROM p2p_data", conn)
+    conn.close()
+    return df
+
+# Fetch historical data
+historical_df = fetch_historical_data()
+
+# Convert timestamp to datetime
+historical_df['timestamp'] = pd.to_datetime(historical_df['timestamp'])
+
+# Plot historical data
 fig, ax = plt.subplots()
-ax.set_title(f"Last update: {current_time}")
-sns.ecdfplot(x="price", weights="limit", stat="count", data=sell, ax=ax)
-sns.ecdfplot(x="price", weights="limit", stat="count", complementary=True, data=buy, ax=ax)
-sns.scatterplot(x="price", y="limit", hue="buysell", data=df, ax=ax, s=50, alpha=0.7) 
-# Adjusting the point size (s=50) and transparency (alpha=0.7) helps in better visualizing overlapping points.
-
-
-ax.set_xlabel("Price (mmk)")
-ax.set_ylabel("Tradable Quantity (Depth)")
-ax.set_yscale('log')
-ax.set_xticks(np.arange(min_round, max_round + 1, 25))
-ax.set_yticks([100, 250, 500, 1000, 2000, 5000, 10000, 50000, 100000, 200000, 500000, 1000000], 
-              [100, 250, 500, "1k", "2k", "5k", "10k", "50k", "100k", "200k", "500k", "1M"])
-
-# Adding annotations for key points
-for i in range(len(df)):
-    if df.iloc[i]['limit'] > 100000:
-        ax.annotate(f"{df.iloc[i]['limit']}", (df.iloc[i]['price'], df.iloc[i]['limit']), textcoords="offset points", xytext=(0,10), ha='center')
-
-
-# Display the plot in Streamlit
+sns.lineplot(x='timestamp', y='price', hue='buysell', data=historical_df, ax=ax)
+ax.set_title("Historical P2P Prices")
+ax.set_xlabel("Timestamp")
+ax.set_ylabel("Price (MMK)")
+plt.xticks(rotation=45)
 st.pyplot(fig)
+
+# Start the scheduler
+run_scheduler()

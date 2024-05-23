@@ -3,4 +3,4 @@ requests
 pandas
 matplotlib
 seaborn
-apscheduler
+APScheduler>=3.10.4

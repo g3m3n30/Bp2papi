@@ -58,6 +58,15 @@ df.buysell = df.buysell.astype("str")
 buy = df.loc[df.buysell == 'BUY']
 sell = df.loc[df.buysell == 'SELL']
 
+# Filter outliers (optional step, adjust as needed)
+#This step removes the prices that fall outside the 5th and 95th percentiles, which helps in focusing on the central distribution of prices.
+price_lower_quantile = df.price.quantile(0.05)
+price_upper_quantile = df.price.quantile(0.95)
+df = df[(df.price >= price_lower_quantile) & (df.price <= price_upper_quantile)]
+
+buy = df.loc[df.buysell == 'BUY']
+sell = df.loc[df.buysell == 'SELL']
+
 # Rounding for x-axis ticks
 min_round = round_25(min(df.price))
 max_round = round_25(max(df.price))
@@ -67,7 +76,9 @@ fig, ax = plt.subplots()
 ax.set_title(f"Last update: {current_time}")
 sns.ecdfplot(x="price", weights="limit", stat="count", data=sell, ax=ax)
 sns.ecdfplot(x="price", weights="limit", stat="count", complementary=True, data=buy, ax=ax)
-sns.scatterplot(x="price", y="limit", hue="buysell", data=df, ax=ax)
+sns.scatterplot(x="price", y="limit", hue="buysell", data=df, ax=ax, s=50, alpha=0.7) 
+# Adjusting the point size (s=50) and transparency (alpha=0.7) helps in better visualizing overlapping points.
+
 
 ax.set_xlabel("Price")
 ax.set_ylabel("Depth ($)")

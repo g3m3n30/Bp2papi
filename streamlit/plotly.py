@@ -87,7 +87,7 @@ fig.add_trace(go.Scatter(
     x=[highest_buy['price']],
     y=[highest_buy['limit']],
     mode='text',
-    text=[{highest_buy['price']}],
+    text=[highest_buy['price']],
     textposition='top right',
     showlegend=False,
     marker=dict(color='green')
@@ -97,7 +97,7 @@ fig.add_trace(go.Scatter(
     x=[lowest_sell['price']],
     y=[lowest_sell['limit']],
     mode='text',
-    text=[{lowest_sell['price']}],
+    text=[lowest_sell['price']],
     textposition='top right',
     showlegend=False,
     marker=dict(color='red')

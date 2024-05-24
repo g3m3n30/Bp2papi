@@ -78,7 +78,7 @@ max_round = round_25(max(df.price))
 color_discrete_map = {'BUY': 'green', 'SELL': 'red'}
 fig = px.scatter(df, x='price', y='limit', color='buysell', log_y=True,
                  labels={'price': 'Price of USDT (MMK)', 'limit': 'Order Amount (USDT)'},
-                 title=f"Last update: {current_time}",
+                 title=f"Last update: {current_time}, GMT+0",
                  color_discrete_map=color_discrete_map,
                  hover_data=['price', 'limit', 'buysell'])
 

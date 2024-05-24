@@ -13,10 +13,6 @@ def round_25(number):
 # Streamlit App Title
 st.title('BinanceP2P USDT-MMK market')
 
-# Define the UTC offset for your timezone (e.g., UTC-4 for New York)
-utc_offset = timedelta(hours=+6.5)
-local_timezone = timezone(utc_offset)
-
 # Get the current time in the specified timezone
 now = datetime.now(local_timezone)
 current_time = now.strftime("%d-%b-%Y %H:%M:%S %Z%z")

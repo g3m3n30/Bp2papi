@@ -13,9 +13,15 @@ def round_25(number):
 # Streamlit App Title
 st.title('BinanceP2P USDT-MMK market')
 
-# Current Time
-now = datetime.now()
-current_time = now.strftime("%d-%b-%Y %H:%M:%S")
+# Define the UTC offset for your timezone (e.g., UTC-4 for New York)
+utc_offset = timedelta(hours=+6.5)
+local_timezone = timezone(utc_offset)
+
+# Get the current time in the specified timezone
+now = datetime.now(local_timezone)
+current_time = now.strftime("%d-%b-%Y %H:%M:%S %Z%z")
+
+# Display the current time with timezone information
 st.write(f"Last update: {current_time}")
 
 # Binance API link and headers
@@ -77,7 +83,7 @@ max_round = round_25(max(df.price))
 # Plotting with Plotly
 color_discrete_map = {'BUY': 'green', 'SELL': 'red'}
 fig = px.scatter(df, x='price', y='limit', color='buysell', log_y=True,
-                 labels={'price': 'Price (MMK)', 'limit': 'Tradable Quantity (Depth)'},
+                 labels={'price': 'Price of USDT (MMK)', 'limit': 'Order Amount (USDT)'},
                  title=f"Last update: {current_time}",
                  color_discrete_map=color_discrete_map,
                  hover_data=['price', 'limit', 'buysell'])

@@ -13,12 +13,10 @@ def round_25(number):
 # Streamlit App Title
 st.title('BinanceP2P USDT-MMK market')
 
-# Get the current time in the specified timezone
-now = datetime.now(local_timezone)
-current_time = now.strftime("%d-%b-%Y %H:%M:%S %Z%z")
-
-# Display the current time with timezone information
-st.write(f"Last update: {current_time}")
+# Current Time
+now = datetime.now()
+current_time = now.strftime("%d-%b-%Y %H:%M:%S")
+st.write(f"Last update: {current_time}, GMT+0")
 
 # Binance API link and headers
 link = 'https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search'

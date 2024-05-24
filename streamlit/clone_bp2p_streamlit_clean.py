@@ -4,7 +4,7 @@ import requests
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 # Function to round numbers to the nearest 25
 def round_25(number):
@@ -13,10 +13,17 @@ def round_25(number):
 # Streamlit App Title
 st.title('BinanceP2P USDT-MMK market')
 
-# Current Time
-now = datetime.now()
-current_time = now.strftime("%d-%b-%Y %H:%M:%S")
+# Define the UTC offset for your timezone (e.g., UTC-4 for New York)
+utc_offset = timedelta(hours=+6.5)
+local_timezone = timezone(utc_offset)
+
+# Get the current time in the specified timezone
+now = datetime.now(local_timezone)
+current_time = now.strftime("%d-%b-%Y %H:%M:%S %Z%z")
+
+# Display the current time with timezone information
 st.write(f"Last update: {current_time}")
+
 
 # Binance API link and headers
 link = 'https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search'
@@ -80,8 +87,8 @@ sns.scatterplot(x="price", y="limit", hue="buysell", data=df, ax=ax, s=50, alpha
 # Adjusting the point size (s=50) and transparency (alpha=0.7) helps in better visualizing overlapping points.
 
 
-ax.set_xlabel("Price (mmk)")
-ax.set_ylabel("Tradable Quantity (Depth)")
+ax.set_xlabel("Price of USDT (MMK)")
+ax.set_ylabel("Order Amount (USDT)")
 ax.set_yscale('log')
 ax.set_xticks(np.arange(min_round, max_round + 1, 25))
 ax.set_yticks([100, 250, 500, 1000, 2000, 5000, 10000, 50000, 100000, 200000, 500000, 1000000], 

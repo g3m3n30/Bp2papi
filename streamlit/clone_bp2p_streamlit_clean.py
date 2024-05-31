@@ -6,6 +6,41 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from datetime import datetime
 
+######## start LOCAL TIME #####
+
+import pytz
+import requests
+
+def get_timezone_from_ip():
+    try:
+        # Get the user's IP information
+        response = requests.get('https://ipinfo.io')
+        data = response.json()
+        timezone = data['timezone']
+        return timezone
+    except Exception as e:
+        # Default to UTC if there's an issue
+        st.write(f"Error fetching timezone: {e}")
+        return 'UTC'
+
+# Get the local timezone based on the user's IP
+local_tz_str = get_timezone_from_ip()
+local_tz = pytz.timezone(local_tz_str)
+
+# Get the current time in UTC
+now_utc = datetime.now(pytz.utc)
+
+# Convert the current UTC time to local time
+now_local = now_utc.astimezone(local_tz)
+
+# Format the local time
+current_time = now_local.strftime("%d-%b-%Y %H:%M:%S GMT %z")
+
+# Display the formatted time
+# st.write(f"Last update: {current_time}")
+
+############### END LOCAL TIME ##########
+
 # Function to round numbers to the nearest 25
 def round_25(number):
     return 25 * round(number / 25)
@@ -13,10 +48,8 @@ def round_25(number):
 # Streamlit App Title
 st.title('BinanceP2P USDT-MMK market')
 
-# Current Time
-now = datetime.now()
-current_time = now.strftime("%d-%b-%Y %H:%M:%S")
-st.write(f"Last update: {current_time}")
+# Display Converted Local Time
+# st.write(f"Last update : {current_time}")
 
 # Binance API link and headers
 link = 'https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search'
@@ -86,6 +119,9 @@ ax.set_yscale('log')
 ax.set_xticks(np.arange(min_round, max_round + 1, 25))
 ax.set_yticks([100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000, 500000, 1000000], 
               [100, 250, 500, "1k", "2.5k", "5k", "10k", "25k", "50k", "100k", "250k", "500k", "1M"])
+
+# Rotate x-axis tick labels by 90 degrees counter clockwise
+ax.set_xticklabels(ax.get_xticks(), rotation=90)
 
 # Adding annotations for key points
 for i in range(len(df)):

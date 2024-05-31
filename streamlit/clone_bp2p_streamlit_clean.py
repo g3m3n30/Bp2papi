@@ -84,8 +84,8 @@ ax.set_xlabel("Price (mmk)")
 ax.set_ylabel("Tradable Quantity (Depth)")
 ax.set_yscale('log')
 ax.set_xticks(np.arange(min_round, max_round + 1, 25))
-ax.set_yticks([100, 250, 500, 1000, 2000, 5000, 10000, 50000, 100000, 200000, 500000, 1000000], 
-              [100, 250, 500, "1k", "2k", "5k", "10k", "50k", "100k", "200k", "500k", "1M"])
+ax.set_yticks([100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000, 500000, 1000000], 
+              [100, 250, 500, "1k", "2.5k", "5k", "10k", "25k", "50k", "100k", "250k", "500k", "1M"])
 
 # Adding annotations for key points
 for i in range(len(df)):

@@ -125,8 +125,8 @@ fig.add_trace(go.Scatter(
 
 fig.update_layout(
     xaxis=dict(tickmode='linear'),
-    yaxis=dict(tickvals=[100, 250, 500, 1000, 2000, 5000, 10000, 50000, 100000, 200000, 500000, 1000000, 2500000, 10000000],
-               ticktext=[100, 250, 500, "1k", "2k", "5k", "10k", "50k", "100k", "200k", "500k", "1M", "2.5M", "10M"])
+#    yaxis=dict(tickvals=[100, 250, 500, 1000, 2000, 5000, 10000, 50000, 100000, 200000, 500000, 1000000, 2500000, 10000000],
+#               ticktext=[100, 250, 500, "1k", "2k", "5k", "10k", "50k", "100k", "200k", "500k", "1M", "2.5M", "10M"])
 )
 
 # Display the plot in Streamlit

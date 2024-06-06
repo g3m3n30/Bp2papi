@@ -1,14 +1,10 @@
-import streamlit as st
+\import streamlit as st
 import numpy as np
 import requests
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
-
-# Function to round numbers to the nearest 25
-def round_25(number):
-    return 25 * round(number / 25)
 
 ######## start LOCAL TIME #####
 
@@ -39,9 +35,6 @@ now_local = now_utc.astimezone(local_tz)
 
 # Format the local time
 current_time = now_local.strftime("%d-%b-%Y %H:%M:%S GMT %z")
-
-# Display the formatted time
-# st.write(f"Last update: {current_time}")
 
 ############### END LOCAL TIME ##########
 
@@ -101,10 +94,6 @@ sell = df.loc[df.buysell == 'SELL']
 highest_buy = buy.loc[buy.price.idxmax()]
 lowest_sell = sell.loc[sell.price.idxmin()]
 
-# Rounding for x-axis ticks
-min_round = round_25(min(df.price))
-max_round = round_25(max(df.price))
-
 # Plotting with Plotly
 color_discrete_map = {'BUY': 'green', 'SELL': 'red'}
 fig = px.scatter(df, x='price', y='limit', color='buysell', log_y=True,
@@ -135,9 +124,9 @@ fig.add_trace(go.Scatter(
 ))
 
 fig.update_layout(
-    xaxis=dict(tickmode='linear', dtick=25, range=[min_round, max_round]),
-    yaxis=dict(tickvals=[100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000, 500000, 1000000, 2500000, 10000000],
-               ticktext=[100, 250, 500, "1k", "2.5k", "5k", "10k", "25k", "50k", "100k", "250k", "500k", "1M", "2.5M", "10M"])
+    xaxis=dict(tickmode='linear'),
+    yaxis=dict(tickvals=[100, 250, 500, 1000, 2000, 5000, 10000, 50000, 100000, 200000, 500000, 1000000, 2500000, 10000000],
+               ticktext=[100, 250, 500, "1k", "2k", "5k", "10k", "50k", "100k", "200k", "500k", "1M", "2.5M", "10M"])
 )
 
 # Display the plot in Streamlit

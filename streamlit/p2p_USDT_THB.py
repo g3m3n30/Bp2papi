@@ -40,7 +40,7 @@ current_time = now_local.strftime("%d-%b-%Y %H:%M:%S GMT %z")
 
 # Streamlit App Title
 st.title('BinanceP2P USDT-THB market')
-st.write(f"Last update: {current_time}")
+# st.write(f"Last update: {current_time}")
 
 # Binance API link and headers
 link = 'https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search'
@@ -58,7 +58,7 @@ def fetch_data(payload):
 # Payloads for different API requests
 def generate_payloads():
     payloads = []
-    for i in range(1, 3):
+    for i in range(1, 5):
         payloads.append({"proMerchantAds": False, "page": i, "rows": 20, "payTypes": [], "countries": [], "publisherType": None, "asset": "USDT", "fiat": "THB", "tradeType": "BUY"})
         payloads.append({"proMerchantAds": False, "page": i, "rows": 20, "payTypes": [], "countries": [], "publisherType": None, "asset": "USDT", "fiat": "THB", "tradeType": "SELL"})
     return payloads
@@ -76,7 +76,6 @@ y = list(map(lambda y: y["tradableQuantity"], result))
 z = list(map(lambda z: z["tradeType"], result))
 combineddata = [{'price': price, 'limit': limit, 'buysell': buysell} for price, limit, buysell in zip(x, y, z)]
 df = pd.DataFrame(data=combineddata)
-
 
 # Convert columns to appropriate types
 df.price = df.price.astype("float")
@@ -127,9 +126,10 @@ fig.add_trace(go.Scatter(
 ))
 
 fig.update_layout(
-    xaxis=dict(tickmode='linear'),
-#    yaxis=dict(tickvals=[100, 250, 500, 1000, 2000, 5000, 10000, 50000, 100000, 200000, 500000, 1000000, 2500000, 10000000],
-#               ticktext=[100, 250, 500, "1k", "2k", "5k", "10k", "50k", "100k", "200k", "500k", "1M", "2.5M", "10M"])
+    xaxis=dict(tickmode='linear',
+               dtick=0.1), # Set the tick interval to 0.1
+    # yaxis=dict(tickvals=[100, 250, 500, 1000, 2000, 5000, 10000, 25000, 50000, 100000, 200000, 500000, 1000000, 2500000, 10000000],
+    #           ticktext=[100, 250, 500, "1k", "2k", "5k", "10k", "25k", "50k", "100k", "200k", "500k", "1M", "2.5M", "10M"])
 )
 
 # Display the plot in Streamlit

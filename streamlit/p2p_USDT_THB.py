@@ -56,16 +56,18 @@ def fetch_data(payload):
         return res.json()['data']
 
 # Payloads for different API requests
-payload_buy_1 = {"proMerchantAds": False, "page": 1, "rows": 20, "payTypes": [], "countries": [], "publisherType": None, "asset": "USDT", "fiat": "THB", "tradeType": "BUY"}
-payload_sell_1 = {"proMerchantAds": False, "page": 1, "rows": 20, "payTypes": [], "countries": [], "publisherType": None, "asset": "USDT", "fiat": "THB", "tradeType": "SELL"}
-payload_buy_2 = {"proMerchantAds": False, "page": 2, "rows": 20, "payTypes": [], "countries": [], "publisherType": None, "asset": "USDT", "fiat": "THB", "tradeType": "BUY"}
-payload_sell_2 = {"proMerchantAds": False, "page": 2, "rows": 20, "payTypes": [], "countries": [], "publisherType": None, "asset": "USDT", "fiat": "THB", "tradeType": "SELL"}
+def generate_payloads():
+    payloads = []
+    for i in range(1, 3):
+        payloads.append({"proMerchantAds": False, "page": i, "rows": 20, "payTypes": [], "countries": [], "publisherType": None, "asset": "USDT", "fiat": "THB", "tradeType": "BUY"})
+        payloads.append({"proMerchantAds": False, "page": i, "rows": 20, "payTypes": [], "countries": [], "publisherType": None, "asset": "USDT", "fiat": "THB", "tradeType": "SELL"})
+    return payloads
 
 # Fetch and combine data
-data = fetch_data(payload_buy_1)
-data.extend(fetch_data(payload_sell_1))
-data.extend(fetch_data(payload_buy_2))
-data.extend(fetch_data(payload_sell_2))
+data = []
+payloads = generate_payloads()
+for payload in payloads:
+    data.extend(fetch_data(payload))
 
 # Process data into a DataFrame
 result = [dict(pair for d1 in d.values() for pair in d1.items()) for d in data]
@@ -74,6 +76,7 @@ y = list(map(lambda y: y["tradableQuantity"], result))
 z = list(map(lambda z: z["tradeType"], result))
 combineddata = [{'price': price, 'limit': limit, 'buysell': buysell} for price, limit, buysell in zip(x, y, z)]
 df = pd.DataFrame(data=combineddata)
+
 
 # Convert columns to appropriate types
 df.price = df.price.astype("float")
